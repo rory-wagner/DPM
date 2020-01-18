@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<html>
+    <head>
+        <title>Deterministic Password Manager</title>
+        <link rel="stylesheet" href="style.css">
+        <meta charset="UTF-8">
+        <meta name="robots" content="noindex">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+
+        <div id="spacing">
+            <div id="topColor">
+                <div id="topSpacing">
+                    <h1 id="title">Deterministic Password Manager</h1>
+                </div>
+            </div> 
+            <div id="login">
+                <p>
+                    Login Information:
+                </p>
+                <label>Username</label>
+                <input type="text" id="usernameLogin">
+                <label>Password</label>
+                <input type="password" id="passwordLogin">
+                <button id="checkLoginButton">Login</button>
+            </div>
+            <div id="registration">
+                <p>
+                    Password Generator:
+                </p>
+                <label>Username</label>
+                <input type="text" id="username">
+
+                <label>Master Password</label>
+                <input type="password" id="password">
+
+                <label>Website</label>
+                <input type="text" id="website">
+
+                <label>Counter</label>
+                <input type="text" id="counter">
+
+                <button id="generateButton">Generate default 64 character password</button>
+            </div>
+            <div id="main">
+
+                <div id="customDiv">
+                    <h3>Custom Password Settings</h3>
+
+                    <label>Length as an integer</label>
+                    <input type="checkbox">
+                    <input type="text" id="nameAdder">
+
+                    <label>Symbols</label>
+                    <input type="checkbox">
+                    <input type="text" id="nationAdder">
+
+                    <label>Uppercase</label>
+                    <input type="checkbox">
+
+                    <label>Lowercase</label>
+                    <input type="checkbox">
+
+                    <label>Numbers</label>
+                    <input type="checkbox">
+                    
+                    <button id="add">Generate Custom</button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="app.js"></script>
+    </body>
+
+</html>
