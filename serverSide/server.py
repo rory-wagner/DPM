@@ -22,10 +22,8 @@ class MyRequestHandler (BaseHTTPRequestHandler):
             i = 0
             self.encryptDefault()
             # self.end_headers()
-        elif self.path == "/logins":
-            self.checkLogins()
-        elif self.path == "/registrations":
-            self.checkRegistrations()
+        elif self.path == "/customs":
+            self.encryptCustom()
         else:
             self.send404()
         return
@@ -53,19 +51,79 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         print(parsedBody["website"][0])
         print(parsedBody["counter"][0])
 
-        salt = "saltGoHere"
+        salt = username + website + counter
+
+        #here I need to hash the salt probably with sha256 before passing it in
 
         encryptedPassword = hashing.encrypt(password, salt)
 
-        finishedPassword = formatting.formatAsDefault(encryptedPassword)
-
         self.send_response(201)
+        self.send_header("Content-Type", "application/json")
         self.end_headers()
+        self.sendPassword(encryptedPassword)
 
+
+        return
+
+    def sendPassword(self, encryptedPassword):
+        encryptedJSON = {}
+        encryptedJSON["encryptedPassword"] = encryptedPassword
+        intoBytes = bytes(json.dumps(encryptedJSON), "utf-8")
+        self.wfile.write(intoBytes)
         return
     
 
+    def encryptCustom(self):
+        print(self.headers)
+        length = int(self.headers["Content-Length"])
 
+        # Retrieve data:
+        body = self.rfile.read(length).decode("utf-8")
+        print("Body:", body)
+        parsedBody = parse_qs(body)
+        print("Parsed Body:", parsedBody)
+        
+        # Gather data:
+        username = parsedBody["username"][0]
+        password = parsedBody["password"][0]
+        website = parsedBody["website"][0]
+        counter = parsedBody["counter"][0]
+        length = parsedBody["length"][0]
+        symbols = parsedBody["symbols"][0]
+        uppercase = parsedBody["uppercase"][0]
+        lowercase = parsedBody["lowercase"][0]
+        numbers = parsedBody["numbers"][0]
+
+        length = int(length)
+        # symbols = 
+        uppercase = bool(uppercase)
+        lowercase = bool(lowercase)
+        numbers = bool(numbers)
+
+        print(username)
+        print(password)
+        print(website)
+        print(counter)
+        print(length)
+        print(symbols)
+        print(uppercase)
+        print(lowercase)
+        print(numbers)
+
+        salt = username + website + counter
+
+        encryptedPassword = hashing.encrypt(password, salt)
+        finishedPassword = formatting.formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lowercase)
+
+        print("finished:")
+        print(finishedPassword)
+        print(len(finishedPassword))
+
+        self.send_response(201)
+        self.end_headers()
+        self.sendPassword(finishedPassword)
+
+        return
 
 
 
