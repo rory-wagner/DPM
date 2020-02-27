@@ -4,6 +4,7 @@ import json
 import sys
 import hashing
 import formatting
+import usersDB
 
 
 class MyRequestHandler (BaseHTTPRequestHandler):
@@ -216,12 +217,9 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
 
 def run():
-    # db = characters_db.CharactersDB()
-    # db.createTable()
-    # db = None # disconnect
-    # db = characters_db.Users()
-    # db.createTable()
-    # db = None # disconnect
+    db = characters_db.Users()
+    db.createTable()
+    db = None # disconnect
 
     port = 8080
     if len(sys.argv) > 1:
