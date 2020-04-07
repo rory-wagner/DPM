@@ -1,8 +1,8 @@
-import random
 
-gAlphabet = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?! \t\n\rabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+gAlphabet = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 gUpperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 gLowerAlphabet = "abcdefghijklmnopqrstuvwxyz"
+gNumbers = "0123456789"
 
 p = 0
 q = 0
@@ -16,7 +16,7 @@ def convertFromNTo10(textToConvert):
     textToConvert.encode('unicode_escape')
     num = 0
     for i in range(len(textToConvert)):
-        print(textToConvert[i])
+        # print(textToConvert[i])
         num = gAlphabet.index(textToConvert[i]) + (num * (len(gAlphabet)))
     return num
 
@@ -25,12 +25,12 @@ def convertFrom10ToN(x, builtAlphabet):
     q = int(x)
     a = []
     while q != 0:
-        a.append(q % len(buildAlphabet))
-        q = q // len(buildAlphabet)
+        a.append(q % len(builtAlphabet))
+        q = q // len(builtAlphabet)
     a.reverse()
     string = ''
     for item in a:
-        string += str(buildAlphabet[item])
+        string += str(builtAlphabet[item])
 
     return string
 
@@ -46,44 +46,66 @@ def convertFromListToString(theList):
         theString += a
     return theString
 
+def nextPsuedoRandNum(num, length):
+    return ((num * 113) + 137) % length
+
+def ensureInsert(toString, fromString, invalidIndeces):
+
+    return toString
+
 
 #this is not deterministic yet:
 def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lowercase):
-    random.seed(convertFromNTo10(encryptedPassword))
+    num = convertFromNTo10(encryptedPassword)
+
 
     encryptedPassword = convertFromStringToList(encryptedPassword)
 
     #change length:
     encryptedPassword = encryptedPassword[0:length]
 
+    #ensure validity of password characters:
+    validAlphabet = gNumbers + gUpperAlphabet + gLowerAlphabet + symbols
+
+    randNum = nextPsuedoRandNum(num, len(validAlphabet))
+
+    for i in range(len(encryptedPassword)):
+        if encryptedPassword[i] not in validAlphabet:
+            randNum = nextPsuedoRandNum(randNum, len(validAlphabet))
+            print(randNum)
+            encryptedPassword[i] = validAlphabet[randNum]
+
     #add symbol:
+    randSymbolIndex = nextPsuedoRandNum(randNum, length)
+    randNum = nextPsuedoRandNum(randSymbolIndex, len(symbols))
     needToAddSymbol = True
-    randomSymbolIndex = random.randrange(0, length)
     for a in encryptedPassword:
         if a in symbols:
             needToAddSymbol = False
     if needToAddSymbol:
-        encryptedPassword[randomSymbolIndex] = symbols[random.randrange(0,len(symbols))]
+        encryptedPassword[randSymbolIndex] = symbols[randNum]
 
     #add number:
-    randomNumberIndex = random.randrange(0, length)
-    while randomNumberIndex == randomSymbolIndex:
-        randomNumberIndex = random.randrange(0, length)
+    randNumIndex = nextPsuedoRandNum(randNum, length)
+    randNum = nextPsuedoRandNum(randNumIndex, 10)
+    while randNumIndex == randSymbolIndex:
+        randNumIndex = nextPsuedoRandNum(randNumIndex, length)
 
-    randomNumber = str(random.randrange(0, 10))
+    randomNumber = randNum % 10
     needToAddNumber = True
     for a in encryptedPassword:
         if a in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']:
             needToAddNumber = False
     if needToAddNumber and numbers:
-        encryptedPassword[randomNumberIndex] = randomNumber
+        encryptedPassword[randNumIndex] = str(randomNumber)
 
     #add uppercase:
-    randomUppercaseIndex = random.randrange(0, length)
-    while randomUppercaseIndex == randomSymbolIndex or randomUppercaseIndex == randomNumberIndex:
-        randomUppercaseIndex = random.randrange(0, length)
+    randUpperIndex = nextPsuedoRandNum(randNum, length)
+    randNum = nextPsuedoRandNum(randUpperIndex, len(gUpperAlphabet))
+    while randUpperIndex == randSymbolIndex or randUpperIndex == randNumIndex:
+        randUpperIndex = nextPsuedoRandNum(randUpperIndex, length)
 
-    randomUpper = gUpperAlphabet[random.randrange(0, len(gUpperAlphabet))]
+    randomUpper = gUpperAlphabet[randNum]
     needToAddUpper = True
     print(encryptedPassword)
     for a in encryptedPassword:
@@ -91,20 +113,21 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
         if a in gUpperAlphabet:
             needToAddUpper = False
     if needToAddUpper and uppercase:
-        encryptedPassword[randomUppercaseIndex] = randomUpper
+        encryptedPassword[randUpperIndex] = randomUpper
 
     #add lowercase:
-    randomLowercaseIndex = random.randrange(0, length)
-    while randomLowercaseIndex == randomSymbolIndex or randomLowercaseIndex == randomNumberIndex or randomLowercaseIndex == randomUppercaseIndex:
-        randomLowercaseIndex = random.randrange(0, length)
+    randLowerIndex = nextPsuedoRandNum(randNum, length)
+    randNum = nextPsuedoRandNum(randLowerIndex, len(gLowerAlphabet))
+    while randLowerIndex == randSymbolIndex or randLowerIndex == randNumIndex or randLowerIndex == randUpperIndex:
+        randLowerIndex = nextPsuedoRandNum(randLowerIndex, length)
 
-    randomLower = gLowerAlphabet[random.randrange(0, len(gLowerAlphabet))]
+    randomLower = gLowerAlphabet[randNum]
     needToAddLower = True
     for a in encryptedPassword:
         if a in gLowerAlphabet:
             needToAddLower = False
     if needToAddLower and lowercase:
-        encryptedPassword[randomLowercaseIndex] = randomLower
+        encryptedPassword[randLowerIndex] = randomLower
 
     encryptedPassword = convertFromListToString(encryptedPassword)
 

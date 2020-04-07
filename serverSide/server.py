@@ -6,7 +6,6 @@ import hashing
 import formatting
 import usersDB
 
-
 class MyRequestHandler (BaseHTTPRequestHandler):
 
     def do_OPTIONS(self):
@@ -17,7 +16,6 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         self.end_headers()
         return
 
-
     def do_POST(self):
         if self.path == "/defaults":
             i = 0
@@ -25,6 +23,13 @@ class MyRequestHandler (BaseHTTPRequestHandler):
             # self.end_headers()
         elif self.path == "/customs":
             self.encryptCustom()
+        else:
+            self.send404()
+        return
+
+    def do_GET(self):
+        if self.path == "/specifications":
+            self.retrieveCollection()
         else:
             self.send404()
         return
@@ -54,15 +59,21 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
         salt = username + website + counter
 
+        print("Password and salt:")
+        print(password)
+        print(salt)
+
         #here I need to hash the salt probably with sha256 before passing it in
 
-        encryptedPassword = hashing.encrypt(password, salt)
+        finalPassword = hashing.encrypt(password, salt)
 
         self.send_response(201)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
-        self.sendPassword(encryptedPassword)
+        self.sendPassword(finalPassword)
 
+        #now we will check if the user needs to be added to the database
+        self.checkDatabase(username, website, counter, -1, "", 0, 0, 0)
 
         return
 
@@ -89,13 +100,13 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         password = parsedBody["password"][0]
         website = parsedBody["website"][0]
         counter = parsedBody["counter"][0]
-        length = parsedBody["length"][0]
+        passwordLength = parsedBody["length"][0]
         symbols = parsedBody["symbols"][0]
         uppercase = parsedBody["uppercase"][0]
         lowercase = parsedBody["lowercase"][0]
         numbers = parsedBody["numbers"][0]
 
-        length = int(length)
+        passwordLength = int(passwordLength)
         # symbols = 
         uppercase = bool(uppercase)
         lowercase = bool(lowercase)
@@ -105,8 +116,9 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         print(password)
         print(website)
         print(counter)
-        print(length)
+        print(passwordLength)
         print(symbols)
+        print("uppercase, lowercase, and numbers as booleans:")
         print(uppercase)
         print(lowercase)
         print(numbers)
@@ -114,16 +126,46 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         salt = username + website + counter
 
         encryptedPassword = hashing.encrypt(password, salt)
-        finishedPassword = formatting.formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lowercase)
+        finishedPassword = formatting.formatAsCustom(encryptedPassword, passwordLength, symbols, numbers, uppercase, lowercase)
 
         print("finished:")
         print(finishedPassword)
         print(len(finishedPassword))
 
         self.send_response(201)
+        self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.sendPassword(finishedPassword)
 
+        self.checkDatabase(username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers)
+
+        return
+
+    def checkDatabase(self, username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers):
+        db = usersDB.Users()
+        result = db.getUserByUsername(username)
+        needToAdd = True
+        for r in result:
+            if (r["username"] == username) and (r["website"] == website) and (r["count"] == counter) and (r["length"] == passwordLength) and (r["symbols"] == symbols) and (r["uppercase"] == uppercase) and (r["lowercase"] == lowercase) and (r["numbers"] == numbers):
+                needToAdd = False
+        if needToAdd:
+            db.addUser(username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers)
+            print("Added user")
+        return
+
+    def retrieveCollection(self):
+        print("retrieving Collection")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+
+        db = usersDB.Users()
+        allSpecifications = db.getAllUsers()
+
+        print("sending collection")
+
+        self.wfile.write(bytes(json.dumps(allSpecifications), "utf-8"))
+        print(allSpecifications)
         return
 
 
@@ -217,8 +259,8 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
 
 def run():
-    db = characters_db.Users()
-    db.createTable()
+    db = usersDB.Users()
+    # db.createTable()
     db = None # disconnect
 
     port = 8080

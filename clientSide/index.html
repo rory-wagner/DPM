@@ -9,72 +9,90 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-
-        <div id="spacing">
-            <div id="topColor">
-                <div id="topSpacing">
-                    <h1 id="title">Deterministic Password Manager</h1>
+        <div id="topColor">
+            <div id="topSpacing">
+                <h1 id="title">Deterministic Password Manager</h1>
+            </div>
+        </div> 
+        <div id="main">
+            <div id="inputsDiv">
+                <div id="intro">
+                    <h3>
+                        Intro
+                    </h3>
+                    <p>
+                        A deterministic password manager creates passwords to be used based off of parameters that are passed in.
+                        This deterministic password manager is able to take a counter that represents how many times the website has forced the user to change the password.
+                        It also allows for custom fields to support websites that only allow a specific set of passwords.
+                    </p>
                 </div>
-            </div> 
-            <div id="login">
-                <p>
-                    Login Information:
-                </p>
-                <label>Username</label>
-                <input type="text" id="usernameLogin">
-                <label>Password</label>
-                <input type="password" id="passwordLogin">
-                <button id="checkLoginButton">Login</button>
-            </div>
-            <div id="registration">
-                <p>
-                    Password Generator:
-                </p>
-                <label>Username</label>
-                <input type="text" id="usernameGenerator">
 
-                <label>Master Password</label>
-                <input type="password" id="passwordGenerator">
-
-                <label>Website</label>
-                <input type="text" id="websiteGenerator">
-
-                <label>Counter</label>
-                <input type="text" id="counterGenerator">
-
-                <button id="generateDefaultButton">Generate default 64 character password</button>
-            </div>
-            <div id="main">
+                <div id="defaultDiv">
+                    <h3>
+                        Password Generator:
+                    </h3>
+                    <p>
+                        <label>Username</label>
+                        <input type="text" id="usernameGenerator">
+                    </p>
+                    <p>
+                        <label>Master Password</label>
+                        <input type="password" id="passwordGenerator">
+                    </p>
+                    <p>
+                        <label>Website</label>
+                        <input type="text" id="websiteGenerator">
+                    </p>
+                    <p>
+                        <label>Counter</label>
+                        <input type="text" id="counterGenerator">
+                    </p>
+                    <p>
+                        <button id="generateDefaultButton">Generate default 64 character password</button>
+                    </p>
+                </div>
 
                 <div id="customDiv">
                     <h3>Custom Password Settings</h3>
-
-                    <label>Length as an integer</label>
-                    <input type="text" id="length">
-
-                    <label>Symbols</label>
-                    <input type="text" id="symbols">
-
-                    <label>Uppercase</label>
-                    <input type="checkbox" id="uppercase">
-
-                    <label>Lowercase</label>
-                    <input type="checkbox" id="lowercase">
-
-                    <label>Numbers</label>
-                    <input type="checkbox" id="numbers">
-                    
-                    <button id="generateCustomButton">Generate Custom</button>
+                    <p>
+                        <label>Length as an integer</label>
+                        <input type="text" id="length">
+                    </p>
+                    <p>
+                        <label>Symbols</label>
+                        <input type="text" id="symbols">
+                    </p>
+                    <p>
+                        <label>Uppercase</label>
+                        <input type="checkbox" id="uppercase">
+                    </p>
+                    <p>
+                        <label>Lowercase</label>
+                        <input type="checkbox" id="lowercase">
+                    </p>
+                    <p>
+                        <label>Numbers</label>
+                        <input type="checkbox" id="numbers">
+                    </p>
+                    <p>
+                        <button id="generateCustomButton">Generate Custom</button>
+                    </p>
                 </div>
             </div>
-            <div id="displayPassword" style="display: none;">
-                <p>
-                    Password to use:
-                </p>
-                <p id="finalPassword">
-
-                </p>
+            
+            <div id="displaySavedSpecifications">
+                <button id="getSavedSpecifications">Get Saved Specifications</button>
+                
             </div>
+        </div>
+
+        <div id="displayPassword" <!--style="display: none;"-->
+            <p>
+                Password to use:
+            </p>
+            <p id="finalPassword">
+
+            </p>
         </div>
         <script type="text/javascript" src="app.js"></script>
     </body>

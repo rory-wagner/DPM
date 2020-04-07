@@ -1,0 +1,9 @@
+Problems:
+    When sending custom symbols over to the server, allow for no specified symbols. 
+    This means result can be default.
+    Same for length
+    also check for boolean bugs with upper, lower, and numbers
+
+
+Possible Additions:
+add button to toggle take away default button and display custom fields

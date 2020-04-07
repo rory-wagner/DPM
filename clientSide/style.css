@@ -1,0 +1,54 @@
+* {
+    font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+    margin: 0%;
+}
+body{
+    height: 100vh;
+    width: auto;
+}
+#title{
+    position: relative;
+}
+#topColor{
+    background-color: rgb(189, 220, 255);
+}
+#topSpacing{
+    padding: 2%;
+    text-align: center;
+}
+#main{
+    margin: 0%;
+    padding: 0%;
+}
+#inputsDiv{
+    width: 44%;
+    padding: 3%;
+    background-color: rgb(175, 255, 255);
+    float: left;
+    overflow: auto;
+}
+#defaultDiv, #customDiv{
+    padding-top: 2%;
+}
+#displaySavedSpecifications{
+    background-color: rgb(255, 206, 201);
+    width: 44%;
+    padding: 3%;
+    height: 100%;
+    float: right;
+    overflow: auto;
+}
+#displayPassword{
+    background-color: rgb(163, 255, 203);
+    padding: 3%;
+    clear: both;
+}
+p{
+    padding: 0.5%;
+}
+input{
+}
+#displaySavedSpecifications p{
+    padding: 0.1%;
+    padding-left: 5.0%;
+}

@@ -14,24 +14,29 @@ class Users:
         self.cursor = self.connection.cursor()
         return
 
-    def userExists(self, user_id):
-        data = [user_id]
-        self.cursor.execute("SELECT * FROM users WHERE ID = ?", data)
-        boo = False
-        result = self.cursor.fetchone()
-        if result:
-            boo = True
+    # def userExists(self, user_id):
+    #     data = [user_id]
+    #     self.cursor.execute("SELECT * FROM users WHERE ID = ?", data)
+    #     boo = False
+    #     result = self.cursor.fetchone()
+    #     if result:
+    #         boo = True
 
-        return boo
+    #     return boo
 
     def getUserByUsername(self, username):
         data = [username]
         self.cursor.execute("SELECT * FROM users WHERE username = ?", data)
-        result = self.cursor.fetchone()
+        result = self.cursor.fetchall()
         return result
 
-    def addUser(self, username, password, firstName, lastName):
-        data = []
-        user = self.cursor.execute("INSERT INTO users (username, count, website, length, symbols, uppercase, lowercase, numbers) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", data)
+    def addUser(self, username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers):
+        data = [username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers]
+        user = self.cursor.execute("INSERT INTO users (username, website, count, length, symbols, uppercase, lowercase, numbers) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", data)
         self.connection.commit()
         return
+
+    def getAllUsers(self):
+        self.cursor.execute("SELECT * FROM users")
+        return self.cursor.fetchall()
+

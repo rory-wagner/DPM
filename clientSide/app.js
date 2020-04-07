@@ -2,6 +2,7 @@ BASE_URL = "http://localhost:8080/"
 
 var defaultPasswordButton = document.querySelector("#generateDefaultButton");
 var customPasswordButton = document.querySelector("#generateCustomButton");
+var savedSpecificationsButton = document.querySelector("#getSavedSpecifications");
 
 defaultPasswordButton.onclick = function (){
     var bodyString;
@@ -23,7 +24,6 @@ defaultPasswordButton.onclick = function (){
     bodyString += "&counter=" + encodeURIComponent(counterText);
 
     fetch(BASE_URL + 'defaults', {
-        //request parameters:
         method: "POST",
         body: bodyString,
         credentials: "include",
@@ -35,12 +35,12 @@ defaultPasswordButton.onclick = function (){
         console.log("Server responded from default POST!", response);
         response.json().then(function (data) {
             console.log(data);
-            displayData();
+            displayPassword(data);
         });
     });
 }
 
-function displayData(){
+function displayPassword(data){
     var passwordToUse = document.querySelector("#finalPassword");
     passwordToUse.textContent = data["encryptedPassword"];
     var passwordDiv = document.querySelector("#displayPassword");
@@ -84,9 +84,9 @@ customPasswordButton.onclick = function () {
     bodyString += "&uppercase=" + encodeURIComponent(uppercaseBool);
     bodyString += "&lowercase=" + encodeURIComponent(lowercaseBool);
     bodyString += "&numbers=" + encodeURIComponent(numbersBool);
+    console.log(bodyString);
 
     fetch(BASE_URL + 'customs', {
-        //request parameters:
         method: "POST",
         body: bodyString,
         credentials: "include",
@@ -94,12 +94,72 @@ customPasswordButton.onclick = function () {
             "Content-Type": "application/x-www-form-urlencoded"
         }
     }).then(function (response){
-        //handle the response:
         console.log("Server responded from custom POST!", response);
-        //goGetData();
+        response.json().then(function (data) {
+            console.log(data);
+            displayPassword(data);
+        });
     });
 }
 
-function goGetData(){
+savedSpecificationsButton.onclick = function() {
+    fetch(BASE_URL + 'specifications', {
+        method: "GET",
+        credentials: "include",
+        headers:{
 
+        }
+    }).then(function (response){
+        console.log("Server responded from specifications GET", response);
+        response.json().then(function (data) {
+            console.log(data);
+            displaySpecifications(data);
+        });
+    })
 }
+
+function displaySpecifications(data){
+    
+    var specsDiv = document.querySelector("#displaySavedSpecifications");
+    for (var i = 0; i < data.length; i++){
+        var entry = document.createElement("h5");
+        entry.innerHTML = "Entry no. " + String(i);
+        specsDiv.appendChild(entry);
+        
+        var username = document.createElement("p");
+        username.innerHTML = data[i]["username"];
+
+        var website = document.createElement("p");
+        website.innerHTML = data[i]["website"];
+
+        var count = document.createElement("p");
+        count.innerHTML = data[i]["count"];
+
+        var length = document.createElement("p");
+        length.innerHTML = data[i]["length"];
+
+        var symbols = document.createElement("p");
+        symbols.innerHTML = data[i]["symbols"];
+
+        var uppercase = document.createElement("p");
+        uppercase.innerHTML = data[i]["uppercase"];
+
+        var lowercase = document.createElement("p");
+        lowercase.innerHTML = data[i]["lowercase"];
+
+        var numbers = document.createElement("p");
+        numbers.innerHTML = data[i]["numbers"];
+
+
+        specsDiv.appendChild(username);
+        specsDiv.appendChild(website);
+        specsDiv.appendChild(count);
+        specsDiv.appendChild(length);
+        specsDiv.appendChild(symbols);
+        specsDiv.appendChild(uppercase);
+        specsDiv.appendChild(lowercase);
+        specsDiv.appendChild(numbers);
+    }
+}
+
+
