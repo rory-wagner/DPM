@@ -40,3 +40,7 @@ class Users:
         self.cursor.execute("SELECT * FROM users")
         return self.cursor.fetchall()
 
+    def createTable(self):
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS users (username TEXT, website TEXT, count TEXT, length INTEGER, symbols TEXT, uppercase BOOLEAN, lowercase BOOLEAN, numbers BOOLEAN)")
+        self.connection.commit()
+        return

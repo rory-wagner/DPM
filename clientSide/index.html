@@ -33,22 +33,22 @@
                     </h3>
                     <p>
                         <label>Username</label>
-                        <input type="text" id="usernameGenerator">
+                        <input type="text" id="usernameGenerator" required>
                     </p>
                     <p>
                         <label>Master Password</label>
-                        <input type="password" id="passwordGenerator">
+                        <input type="password" id="passwordGenerator" required>
                     </p>
                     <p>
                         <label>Website</label>
-                        <input type="text" id="websiteGenerator">
+                        <input type="text" id="websiteGenerator" required>
                     </p>
                     <p>
                         <label>Counter</label>
-                        <input type="text" id="counterGenerator">
+                        <input type="text" id="counterGenerator" required>
                     </p>
                     <p>
-                        <button id="generateDefaultButton">Generate default 64 character password</button>
+                        <input type="submit" id="generateDefaultButton" value="Generate default password">
                     </p>
                 </div>
 
@@ -75,18 +75,21 @@
                         <input type="checkbox" id="numbers">
                     </p>
                     <p>
-                        <button id="generateCustomButton">Generate Custom</button>
+                        <input type="submit" id="generateCustomButton" value="Generate Custom">
                     </p>
                 </div>
             </div>
             
             <div id="displaySavedSpecifications">
                 <button id="getSavedSpecifications">Get Saved Specifications</button>
+                <div id="specsDisplayDiv">
+
+                </div>
                 
             </div>
         </div>
 
-        <div id="displayPassword" <!--style="display: none;"-->
+        <div id="displayPassword" style="display: none;">
             <p>
                 Password to use:
             </p>

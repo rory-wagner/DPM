@@ -3,6 +3,7 @@ gAlphabet = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?!abcdefghijklmnopqrstuvwxyzABCDEF
 gUpperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 gLowerAlphabet = "abcdefghijklmnopqrstuvwxyz"
 gNumbers = "0123456789"
+gSymbols = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?!"
 
 p = 0
 q = 0
@@ -58,14 +59,22 @@ def ensureInsert(toString, fromString, invalidIndeces):
 def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lowercase):
     num = convertFromNTo10(encryptedPassword)
 
-
     encryptedPassword = convertFromStringToList(encryptedPassword)
 
     #change length:
-    encryptedPassword = encryptedPassword[0:length]
+    print(length)
+    print("type:")
+    print(type(length))
+    if length != "default":
+        encryptedPassword = encryptedPassword[0:length]
+    else:
+        length = len(encryptedPassword)
 
     #ensure validity of password characters:
-    validAlphabet = gNumbers + gUpperAlphabet + gLowerAlphabet + symbols
+    tempSymbols = symbols
+    if symbols == "default":
+        tempSymbols = gSymbols
+    validAlphabet = gNumbers + gUpperAlphabet + gLowerAlphabet + tempSymbols
 
     randNum = nextPsuedoRandNum(num, len(validAlphabet))
 
@@ -79,11 +88,12 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
     randSymbolIndex = nextPsuedoRandNum(randNum, length)
     randNum = nextPsuedoRandNum(randSymbolIndex, len(symbols))
     needToAddSymbol = True
-    for a in encryptedPassword:
-        if a in symbols:
-            needToAddSymbol = False
-    if needToAddSymbol:
-        encryptedPassword[randSymbolIndex] = symbols[randNum]
+    if symbols != "default":
+        for a in encryptedPassword:
+            if a in symbols:
+                needToAddSymbol = False
+        if needToAddSymbol:
+            encryptedPassword[randSymbolIndex] = symbols[randNum]
 
     #add number:
     randNumIndex = nextPsuedoRandNum(randNum, length)

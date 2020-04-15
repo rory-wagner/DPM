@@ -73,7 +73,7 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         self.sendPassword(finalPassword)
 
         #now we will check if the user needs to be added to the database
-        self.checkDatabase(username, website, counter, -1, "", 0, 0, 0)
+        self.checkDatabase(username, website, counter, -1, "", False, False, False)
 
         return
 
@@ -106,11 +106,26 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         lowercase = parsedBody["lowercase"][0]
         numbers = parsedBody["numbers"][0]
 
-        passwordLength = int(passwordLength)
-        # symbols = 
-        uppercase = bool(uppercase)
-        lowercase = bool(lowercase)
-        numbers = bool(numbers)
+        # allowing for no given length or symbols
+        if passwordLength != "default":
+            passwordLength = int(passwordLength)
+        #passing a empty string so the alphabet doesn't mess up and we can still check.
+        # if symbols == "default":
+        #     symbols = ""
+
+        if (uppercase == "true"):
+            uppercase = True
+        else:
+            uppercase = False
+        if (lowercase == "true"):
+            lowercase = True
+        else:
+            lowercase = False
+        if (numbers == "true"):
+            numbers = True
+        else:
+            numbers = False
+        
 
         print(username)
         print(password)
@@ -260,7 +275,7 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
 def run():
     db = usersDB.Users()
-    # db.createTable()
+    db.createTable()
     db = None # disconnect
 
     port = 8080

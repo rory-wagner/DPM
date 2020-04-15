@@ -15,8 +15,6 @@ defaultPasswordButton.onclick = function (){
     var passwordText = password.value;
     var websiteText = website.value;
     var counterText = counter.value;
-
-    console.log(username.value);
     
     bodyString = "username=" + encodeURIComponent(usernameText);
     bodyString += "&password=" + encodeURIComponent(passwordText);
@@ -73,14 +71,28 @@ customPasswordButton.onclick = function () {
     var lowercaseBool = lowercase.checked;
     var numbersBool = numbers.checked;
 
-    console.log(username.value);
+    console.log(uppercaseBool);
+    console.log(lowercaseBool);
+    console.log(numbersBool);
     
     bodyString = "username=" + encodeURIComponent(usernameText);
     bodyString += "&password=" + encodeURIComponent(passwordText);
     bodyString += "&website=" + encodeURIComponent(websiteText);
     bodyString += "&counter=" + encodeURIComponent(counterText);
-    bodyString += "&length=" + encodeURIComponent(lengthText);
-    bodyString += "&symbols=" + encodeURIComponent(symbolsText);
+    
+    //allow for empty length and symbol fields
+    if (encodeURIComponent(lengthText) == "") {
+        bodyString += "&length=default";
+    }
+    else{
+        bodyString += "&length=" + encodeURIComponent(lengthText);
+    }
+    if (encodeURIComponent(symbolsText) == "") {
+        bodyString += "&symbols=default";
+    }
+    else {
+        bodyString += "&symbols=" + encodeURIComponent(symbolsText);
+    }
     bodyString += "&uppercase=" + encodeURIComponent(uppercaseBool);
     bodyString += "&lowercase=" + encodeURIComponent(lowercaseBool);
     bodyString += "&numbers=" + encodeURIComponent(numbersBool);
@@ -120,35 +132,62 @@ savedSpecificationsButton.onclick = function() {
 
 function displaySpecifications(data){
     
-    var specsDiv = document.querySelector("#displaySavedSpecifications");
+    var specsDiv = document.querySelector("#specsDisplayDiv");
+    specsDiv.innerHTML = "";
     for (var i = 0; i < data.length; i++){
         var entry = document.createElement("h5");
-        entry.innerHTML = "Entry no. " + String(i);
+        entry.innerHTML = "Entry no. " + String(i + 1);
         specsDiv.appendChild(entry);
         
         var username = document.createElement("p");
-        username.innerHTML = data[i]["username"];
+        username.innerHTML = "Username: " + data[i]["username"];
 
         var website = document.createElement("p");
-        website.innerHTML = data[i]["website"];
+        website.innerHTML = "Website: " + data[i]["website"];
 
         var count = document.createElement("p");
-        count.innerHTML = data[i]["count"];
+        count.innerHTML = "Count: " + data[i]["count"];
 
         var length = document.createElement("p");
-        length.innerHTML = data[i]["length"];
+        if (data[i]["length"] == -1){
+            length.innerHTML = "Length: " + "N/A";
+        }
+        else{
+            length.innerHTML = "Length: " + String(data[i]["length"]);
+        }
 
         var symbols = document.createElement("p");
-        symbols.innerHTML = data[i]["symbols"];
+        if (data[i]["symbols"] == ""){
+            symbols.innerHTML = "Symbols: " + "N/A";
+        }
+        else{
+            symbols.innerHTML = "Symbols: " + data[i]["symbols"];
+        }
 
         var uppercase = document.createElement("p");
-        uppercase.innerHTML = data[i]["uppercase"];
+        if (data[i]["uppercase"] == 1){
+            uppercase.innerHTML = "Uppercase: True";
+        }
+        else {
+            uppercase.innerHTML = "Uppercase: False";
+        }
+        
 
         var lowercase = document.createElement("p");
-        lowercase.innerHTML = data[i]["lowercase"];
+        if (data[i]["lowercase"] == 1){
+            lowercase.innerHTML = "Lowercase: True";
+        }
+        else {
+            lowercase.innerHTML = "Lowercase: False";
+        }
 
         var numbers = document.createElement("p");
-        numbers.innerHTML = data[i]["numbers"];
+        if (data[i]["numbers"] == 1){
+            numbers.innerHTML = "Numbers: True";
+        }
+        else {
+            numbers.innerHTML = "Numbers: False";
+        }
 
 
         specsDiv.appendChild(username);
