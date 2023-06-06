@@ -30,9 +30,9 @@ class Users:
         result = self.cursor.fetchall()
         return result
 
-    def addUser(self, username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers):
-        data = [username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers]
-        user = self.cursor.execute("INSERT INTO users (username, website, count, length, symbols, uppercase, lowercase, numbers) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", data)
+    def addUser(self, username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers):
+        data = [username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers]
+        user = self.cursor.execute("INSERT INTO users (username, domain, count, length, symbols, uppercase, lowercase, numbers) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", data)
         self.connection.commit()
         return
 
@@ -41,6 +41,6 @@ class Users:
         return self.cursor.fetchall()
 
     def createTable(self):
-        self.cursor.execute("CREATE TABLE IF NOT EXISTS users (username TEXT, website TEXT, count TEXT, length INTEGER, symbols TEXT, uppercase BOOLEAN, lowercase BOOLEAN, numbers BOOLEAN)")
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS users (username TEXT, domain TEXT, count TEXT, length INTEGER, symbols TEXT, uppercase BOOLEAN, lowercase BOOLEAN, numbers BOOLEAN)")
         self.connection.commit()
         return

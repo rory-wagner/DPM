@@ -2,13 +2,14 @@ import base64
 import bcrypt
 import hashlib
 import formatting
+import logging
 
-def encrypt(password, salt):
+def encrypt(password=str, salt=str):
 
     #make salt longer:
     while len(password + salt) < 40:
         salt *= 2
-    print(salt)
+    logging.debug(salt)
 
     #hash:
     m = hashlib.md5()

@@ -1,3 +1,4 @@
+import logging
 
 gAlphabet = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 gUpperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -17,7 +18,6 @@ def convertFromNTo10(textToConvert):
     textToConvert.encode('unicode_escape')
     num = 0
     for i in range(len(textToConvert)):
-        # print(textToConvert[i])
         num = gAlphabet.index(textToConvert[i]) + (num * (len(gAlphabet)))
     return num
 
@@ -48,12 +48,8 @@ def convertFromListToString(theList):
     return theString
 
 def nextPsuedoRandNum(num, length):
+    """nextPsuedoRandNum can throw a ZeroDivisionError"""
     return ((num * 113) + 137) % length
-
-def ensureInsert(toString, fromString, invalidIndeces):
-
-    return toString
-
 
 #this is not deterministic yet:
 def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lowercase):
@@ -62,9 +58,9 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
     encryptedPassword = convertFromStringToList(encryptedPassword)
 
     #change length:
-    print(length)
-    print("type:")
-    print(type(length))
+    logging.debug(length)
+    logging.debug("type:")
+    logging.debug(type(length))
     if length != "default":
         encryptedPassword = encryptedPassword[0:length]
     else:
@@ -81,7 +77,7 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
     for i in range(len(encryptedPassword)):
         if encryptedPassword[i] not in validAlphabet:
             randNum = nextPsuedoRandNum(randNum, len(validAlphabet))
-            print(randNum)
+            logging.debug(randNum)
             encryptedPassword[i] = validAlphabet[randNum]
 
     #add symbol:
@@ -117,9 +113,9 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
 
     randomUpper = gUpperAlphabet[randNum]
     needToAddUpper = True
-    print(encryptedPassword)
+    logging.debug(encryptedPassword)
     for a in encryptedPassword:
-        print(a)
+        logging.debug(a)
         if a in gUpperAlphabet:
             needToAddUpper = False
     if needToAddUpper and uppercase:

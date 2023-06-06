@@ -5,6 +5,7 @@ import sys
 import hashing
 import formatting
 import usersDB
+import logging
 
 class MyRequestHandler (BaseHTTPRequestHandler):
 
@@ -37,43 +38,37 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 #Here I start the implementation:
 
     def encryptDefault(self):
-        print(self.headers)
+        logging.debug(self.headers)
         length = int(self.headers["Content-Length"])
 
         # Retrieve data:
         body = self.rfile.read(length).decode("utf-8")
-        print("Body:", body)
+        logging.debug("Body:", body)
         parsedBody = parse_qs(body)
-        print("Parsed Body:", parsedBody)
+        logging.debug("Parsed Body:", parsedBody)
         
         # Gather data:
         username = parsedBody["username"][0]
         password = parsedBody["password"][0]
-        website = parsedBody["website"][0]
+        domain = parsedBody["domain"][0]
         counter = parsedBody["counter"][0]
 
-        print(parsedBody["username"][0])
-        print(parsedBody["password"][0])
-        print(parsedBody["website"][0])
-        print(parsedBody["counter"][0])
+        logging.debug(parsedBody["username"][0])
+        logging.debug(parsedBody["password"][0])
+        logging.debug(parsedBody["domain"][0])
+        logging.debug(parsedBody["counter"][0])
 
-        salt = username + website + counter
-
-        print("Password and salt:")
-        print(password)
-        print(salt)
-
-        #here I need to hash the salt probably with sha256 before passing it in
-
+        # Custom salt
+        salt = username + domain + counter
         finalPassword = hashing.encrypt(password, salt)
 
-        self.send_response(201)
+        self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.sendPassword(finalPassword)
 
         #now we will check if the user needs to be added to the database
-        self.checkDatabase(username, website, counter, -1, "", False, False, False)
+        self.checkDatabase(username, domain, counter, -1, "", False, False, False)
 
         return
 
@@ -86,19 +81,19 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     
 
     def encryptCustom(self):
-        print(self.headers)
+        logging.debug(self.headers)
         length = int(self.headers["Content-Length"])
 
         # Retrieve data:
         body = self.rfile.read(length).decode("utf-8")
-        print("Body:", body)
+        logging.debug("Body:", body)
         parsedBody = parse_qs(body)
-        print("Parsed Body:", parsedBody)
+        logging.debug("Parsed Body:", parsedBody)
         
         # Gather data:
         username = parsedBody["username"][0]
         password = parsedBody["password"][0]
-        website = parsedBody["website"][0]
+        domain = parsedBody["domain"][0]
         counter = parsedBody["counter"][0]
         passwordLength = parsedBody["length"][0]
         symbols = parsedBody["symbols"][0]
@@ -107,8 +102,14 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         numbers = parsedBody["numbers"][0]
 
         # allowing for no given length or symbols
-        if passwordLength != "default":
+        if passwordLength == "default":
+            pass
+        elif int(passwordLength) > 0:
             passwordLength = int(passwordLength)
+        else:
+            logging.info("password length must be a positive integer")
+            self.send400()
+
         #passing a empty string so the alphabet doesn't mess up and we can still check.
         # if symbols == "default":
         #     symbols = ""
@@ -127,49 +128,48 @@ class MyRequestHandler (BaseHTTPRequestHandler):
             numbers = False
         
 
-        print(username)
-        print(password)
-        print(website)
-        print(counter)
-        print(passwordLength)
-        print(symbols)
-        print("uppercase, lowercase, and numbers as booleans:")
-        print(uppercase)
-        print(lowercase)
-        print(numbers)
+        logging.debug(username)
+        logging.debug(domain)
+        logging.debug(counter)
+        logging.debug(passwordLength)
+        logging.debug(symbols)
+        logging.debug("uppercase, lowercase, and numbers as booleans:")
+        logging.debug(uppercase)
+        logging.debug(lowercase)
+        logging.debug(numbers)
 
-        salt = username + website + counter
+        salt = username + domain + counter
 
         encryptedPassword = hashing.encrypt(password, salt)
         finishedPassword = formatting.formatAsCustom(encryptedPassword, passwordLength, symbols, numbers, uppercase, lowercase)
 
-        print("finished:")
-        print(finishedPassword)
-        print(len(finishedPassword))
+        logging.debug("finished:")
+        logging.debug(finishedPassword)
+        logging.debug(len(finishedPassword))
 
-        self.send_response(201)
+        self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.sendPassword(finishedPassword)
 
-        self.checkDatabase(username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers)
+        self.checkDatabase(username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers)
 
         return
 
-    def checkDatabase(self, username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers):
+    def checkDatabase(self, username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers):
         db = usersDB.Users()
         result = db.getUserByUsername(username)
         needToAdd = True
         for r in result:
-            if (r["username"] == username) and (r["website"] == website) and (r["count"] == counter) and (r["length"] == passwordLength) and (r["symbols"] == symbols) and (r["uppercase"] == uppercase) and (r["lowercase"] == lowercase) and (r["numbers"] == numbers):
+            if (r["username"] == username) and (r["domain"] == domain) and (r["count"] == counter) and (r["length"] == passwordLength) and (r["symbols"] == symbols) and (r["uppercase"] == uppercase) and (r["lowercase"] == lowercase) and (r["numbers"] == numbers):
                 needToAdd = False
         if needToAdd:
-            db.addUser(username, website, counter, passwordLength, symbols, uppercase, lowercase, numbers)
-            print("Added user")
+            db.addUser(username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers)
+            logging.debug("Added user")
         return
 
     def retrieveCollection(self):
-        print("retrieving Collection")
+        logging.debug("retrieving Collection")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
@@ -177,21 +177,19 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         db = usersDB.Users()
         allSpecifications = db.getAllUsers()
 
-        print("sending collection")
+        logging.debug("sending collection")
 
         self.wfile.write(bytes(json.dumps(allSpecifications), "utf-8"))
-        print(allSpecifications)
+        logging.debug(allSpecifications)
         return
 
-
-
     # def checkRegistrations(self):
-    #     print(self.headers)
+    #     logging.debug(self.headers)
     #     length = int(self.headers["Content-Length"])
     #     body = self.rfile.read(length).decode("utf-8")
-    #     print("Body:", body)
+    #     logging.debug("Body:", body)
     #     parsedBody = parse_qs(body)
-    #     print("Parsed Body:", parsedBody)
+    #     logging.debug("Parsed Body:", parsedBody)
     #     username = parsedBody["username"][0]
     #     password = parsedBody["password"][0]
     #     firstName = parsedBody["firstName"][0]
@@ -202,9 +200,9 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     #     if Uid == None:
     #         password = bcrypt.hash(password)
     #         db.addUser(username, password, firstName, lastName)
-    #         self.send_response(201)
+    #         self.send_response(200)
     #         self.end_headers()
-    #         print("Uid:", Uid)
+    #         logging.debug("Uid:", Uid)
     #         self.session["userId"] = Uid["id"]
     #         #might want to change previous line to:
     #         #self.session["userId"] = db.getUserByUsername(username)["id"]
@@ -215,23 +213,23 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     #     return
 
     # def checkLogins(self):
-    #     print(self.headers)
+    #     logging.debug(self.headers)
     #     length = int(self.headers["Content-Length"])
     #     body = self.rfile.read(length).decode("utf-8")
-    #     print("Body:", body)
+    #     logging.debug("Body:", body)
     #     parsedBody = parse_qs(body)
-    #     print("Parsed Body:", parsedBody)
+    #     logging.debug("Parsed Body:", parsedBody)
     #     username = parsedBody["username"][0]
     #     password = parsedBody["password"][0]
     #     db = characters_db.Users()
     #     user = db.getUserByUsername(username)
     #     if user != None:
-    #         print("User:", user)
+    #         logging.debug("User:", user)
     #         hashed = user["password"]
     #         if bcrypt.verify(password, hashed):
-    #             self.send_response(201)
+    #             self.send_response(200)
     #             self.end_headers()
-    #             print("Uid:", user)
+    #             logging.debug("Uid:", user)
     #             self.session["userId"] = user["id"]
     #         else:
     #             self.send401()
@@ -246,22 +244,25 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         BaseHTTPRequestHandler.end_headers(self)
         return
 
-    #stuff that already works:
-
-
-    def send404(self):
-        self.send_response(404)
-        self.send_header("Content-type", "text/html")
+    def send400(self):
+        self.send_response(400)
+        self.send_header("Content-Type", "text/plain")
         self.end_headers()
-        self.wfile.write(bytes("Not Found", "utf-8"))
+        self.wfile.write(bytes("Bad Request", "utf-8"))
         return
-    
+
     def send401(self):
         self.send_response(401)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
         self.wfile.write(bytes("Not logged in", "utf-8"))
+        return
 
+    def send404(self):
+        self.send_response(404)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(bytes("Not Found", "utf-8"))
         return
 
     def send422(self):
@@ -273,7 +274,10 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
 
 
-def run():
+def main():
+    logging.basicConfig(filename='server.log', level=logging.INFO)
+    logging.info('Started')
+
     db = usersDB.Users()
     db.createTable()
     db = None # disconnect
@@ -285,7 +289,8 @@ def run():
     listen = ("0.0.0.0", port)
     server = HTTPServer(listen, MyRequestHandler)
 
-    print("Server listening on", "{}:{}".format(*listen))
+    logging.debug("Server listening on", "{}:{}".format(*listen))
     server.serve_forever()
 
-run()
+if __name__ == '__main__':
+    main()
