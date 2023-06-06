@@ -8,17 +8,17 @@ defaultPasswordButton.onclick = function (){
     var bodyString;
     var username = document.querySelector("#usernameGenerator");
     var password = document.querySelector("#passwordGenerator");
-    var website = document.querySelector("#websiteGenerator");
+    var domain = document.querySelector("#domainGenerator");
     var counter = document.querySelector("#counterGenerator");
 
     var usernameText = username.value;
     var passwordText = password.value;
-    var websiteText = website.value;
+    var domainText = domain.value;
     var counterText = counter.value;
     
     bodyString = "username=" + encodeURIComponent(usernameText);
     bodyString += "&password=" + encodeURIComponent(passwordText);
-    bodyString += "&website=" + encodeURIComponent(websiteText);
+    bodyString += "&domain=" + encodeURIComponent(domainText);
     bodyString += "&counter=" + encodeURIComponent(counterText);
 
     fetch(BASE_URL + 'defaults', {
@@ -49,7 +49,7 @@ customPasswordButton.onclick = function () {
     var bodyString;
     var username = document.querySelector("#usernameGenerator");
     var password = document.querySelector("#passwordGenerator");
-    var website = document.querySelector("#websiteGenerator");
+    var domain = document.querySelector("#domainGenerator");
     var counter = document.querySelector("#counterGenerator");
 
     var length = document.querySelector("#length");
@@ -61,7 +61,7 @@ customPasswordButton.onclick = function () {
 
     var usernameText = username.value;
     var passwordText = password.value;
-    var websiteText = website.value;
+    var domainText = domain.value;
     var counterText = counter.value;
 
     var lengthText = length.value;
@@ -77,7 +77,7 @@ customPasswordButton.onclick = function () {
     
     bodyString = "username=" + encodeURIComponent(usernameText);
     bodyString += "&password=" + encodeURIComponent(passwordText);
-    bodyString += "&website=" + encodeURIComponent(websiteText);
+    bodyString += "&domain=" + encodeURIComponent(domainText);
     bodyString += "&counter=" + encodeURIComponent(counterText);
     
     //allow for empty length and symbol fields
@@ -142,8 +142,8 @@ function displaySpecifications(data){
         var username = document.createElement("p");
         username.innerHTML = "Username: " + data[i]["username"];
 
-        var website = document.createElement("p");
-        website.innerHTML = "Website: " + data[i]["website"];
+        var domain = document.createElement("p");
+        domain.innerHTML = "Domain: " + data[i]["domain"];
 
         var count = document.createElement("p");
         count.innerHTML = "Count: " + data[i]["count"];
@@ -191,7 +191,7 @@ function displaySpecifications(data){
 
 
         specsDiv.appendChild(username);
-        specsDiv.appendChild(website);
+        specsDiv.appendChild(domain);
         specsDiv.appendChild(count);
         specsDiv.appendChild(length);
         specsDiv.appendChild(symbols);

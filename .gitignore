@@ -1,1 +1,4 @@
-serverSide/usersDB.db
+/serverSide/__pycache__
+/serverSide/venv
+*.db
+*.log

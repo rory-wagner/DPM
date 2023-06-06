@@ -39,9 +39,7 @@ body{
     overflow: auto;
 }
 #displayPassword{
-    background-color: rgb(163, 255, 203);
     padding: 3%;
-    clear: both;
 }
 p{
     padding: 0.5%;

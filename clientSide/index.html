@@ -21,9 +21,18 @@
                         Intro
                     </h3>
                     <p>
-                        A deterministic password manager creates passwords to be used based off of parameters that are passed in.
-                        This deterministic password manager is able to take a counter that represents how many times the website has forced the user to change the password.
-                        It also allows for custom fields to support websites that only allow a specific set of passwords.
+                        A deterministic password manager creates passwords to be used based off of all text that is passed in.
+                        This deterministic password manager is able to take a counter that represents how many times the domain has forced the user to change the password.
+                        It also allows for custom fields to support domains that only allow a specific set of passwords.
+                    </p>
+                </div>
+
+                <div id="displayPassword" style="display: none;">
+                    <h3>
+                        Your password:
+                    </h3>
+                    <p id="finalPassword">
+        
                     </p>
                 </div>
 
@@ -40,8 +49,8 @@
                         <input type="password" id="passwordGenerator" required>
                     </p>
                     <p>
-                        <label>Website</label>
-                        <input type="text" id="websiteGenerator" required>
+                        <label>Domain</label>
+                        <input type="text" id="domainGenerator" required>
                     </p>
                     <p>
                         <label>Counter</label>
@@ -87,15 +96,6 @@
                 </div>
                 
             </div>
-        </div>
-
-        <div id="displayPassword" style="display: none;">
-            <p>
-                Password to use:
-            </p>
-            <p id="finalPassword">
-
-            </p>
         </div>
         <script type="text/javascript" src="app.js"></script>
     </body>
