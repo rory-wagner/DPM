@@ -9,7 +9,6 @@ def encrypt(password=str, salt=str):
     #make salt longer:
     while len(password + salt) < 40:
         salt *= 2
-    logging.debug(salt)
 
     #hash:
     m = hashlib.md5()

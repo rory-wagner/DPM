@@ -1,5 +1,3 @@
-import logging
-
 gAlphabet = "?/:;<>@#$%^&*()-_+=|\\}{[]~`'\".,?!abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 gUpperAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 gLowerAlphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -58,9 +56,6 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
     encryptedPassword = convertFromStringToList(encryptedPassword)
 
     #change length:
-    logging.debug(length)
-    logging.debug("type:")
-    logging.debug(type(length))
     if length != "default":
         encryptedPassword = encryptedPassword[0:length]
     else:
@@ -77,7 +72,6 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
     for i in range(len(encryptedPassword)):
         if encryptedPassword[i] not in validAlphabet:
             randNum = nextPsuedoRandNum(randNum, len(validAlphabet))
-            logging.debug(randNum)
             encryptedPassword[i] = validAlphabet[randNum]
 
     #add symbol:
@@ -113,9 +107,7 @@ def formatAsCustom(encryptedPassword, length, symbols, numbers, uppercase, lower
 
     randomUpper = gUpperAlphabet[randNum]
     needToAddUpper = True
-    logging.debug(encryptedPassword)
     for a in encryptedPassword:
-        logging.debug(a)
         if a in gUpperAlphabet:
             needToAddUpper = False
     if needToAddUpper and uppercase:

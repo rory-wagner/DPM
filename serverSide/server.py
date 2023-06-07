@@ -21,7 +21,6 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         if self.path == "/defaults":
             i = 0
             self.encryptDefault()
-            # self.end_headers()
         elif self.path == "/customs":
             self.encryptCustom()
         else:
@@ -38,25 +37,18 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 #Here I start the implementation:
 
     def encryptDefault(self):
-        logging.debug(self.headers)
+        logging.info("encrypting default password")
         length = int(self.headers["Content-Length"])
 
         # Retrieve data:
         body = self.rfile.read(length).decode("utf-8")
-        logging.debug("Body:", body)
         parsedBody = parse_qs(body)
-        logging.debug("Parsed Body:", parsedBody)
         
         # Gather data:
         username = parsedBody["username"][0]
         password = parsedBody["password"][0]
         domain = parsedBody["domain"][0]
         counter = parsedBody["counter"][0]
-
-        logging.debug(parsedBody["username"][0])
-        logging.debug(parsedBody["password"][0])
-        logging.debug(parsedBody["domain"][0])
-        logging.debug(parsedBody["counter"][0])
 
         # Custom salt
         salt = username + domain + counter
@@ -81,14 +73,12 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     
 
     def encryptCustom(self):
-        logging.debug(self.headers)
+        logging.info("encrypting custom password")
         length = int(self.headers["Content-Length"])
 
         # Retrieve data:
         body = self.rfile.read(length).decode("utf-8")
-        logging.debug("Body:", body)
         parsedBody = parse_qs(body)
-        logging.debug("Parsed Body:", parsedBody)
         
         # Gather data:
         username = parsedBody["username"][0]
@@ -126,26 +116,11 @@ class MyRequestHandler (BaseHTTPRequestHandler):
             numbers = True
         else:
             numbers = False
-        
-
-        logging.debug(username)
-        logging.debug(domain)
-        logging.debug(counter)
-        logging.debug(passwordLength)
-        logging.debug(symbols)
-        logging.debug("uppercase, lowercase, and numbers as booleans:")
-        logging.debug(uppercase)
-        logging.debug(lowercase)
-        logging.debug(numbers)
 
         salt = username + domain + counter
 
         encryptedPassword = hashing.encrypt(password, salt)
         finishedPassword = formatting.formatAsCustom(encryptedPassword, passwordLength, symbols, numbers, uppercase, lowercase)
-
-        logging.debug("finished:")
-        logging.debug(finishedPassword)
-        logging.debug(len(finishedPassword))
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -165,11 +140,11 @@ class MyRequestHandler (BaseHTTPRequestHandler):
                 needToAdd = False
         if needToAdd:
             db.addUser(username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers)
-            logging.debug("Added user")
+            logging.info("Added user")
         return
 
     def retrieveCollection(self):
-        logging.debug("retrieving Collection")
+        logging.info("retrieving Collection")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
@@ -177,19 +152,16 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         db = usersDB.Users()
         allSpecifications = db.getAllUsers()
 
-        logging.debug("sending collection")
-
         self.wfile.write(bytes(json.dumps(allSpecifications), "utf-8"))
-        logging.debug(allSpecifications)
         return
 
     # def checkRegistrations(self):
-    #     logging.debug(self.headers)
+    #     logging.info(self.headers)
     #     length = int(self.headers["Content-Length"])
     #     body = self.rfile.read(length).decode("utf-8")
-    #     logging.debug("Body:", body)
+    #     logging.info("Body:", body)
     #     parsedBody = parse_qs(body)
-    #     logging.debug("Parsed Body:", parsedBody)
+    #     logging.info("Parsed Body:", parsedBody)
     #     username = parsedBody["username"][0]
     #     password = parsedBody["password"][0]
     #     firstName = parsedBody["firstName"][0]
@@ -202,7 +174,7 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     #         db.addUser(username, password, firstName, lastName)
     #         self.send_response(200)
     #         self.end_headers()
-    #         logging.debug("Uid:", Uid)
+    #         logging.info("Uid:", Uid)
     #         self.session["userId"] = Uid["id"]
     #         #might want to change previous line to:
     #         #self.session["userId"] = db.getUserByUsername(username)["id"]
@@ -213,23 +185,23 @@ class MyRequestHandler (BaseHTTPRequestHandler):
     #     return
 
     # def checkLogins(self):
-    #     logging.debug(self.headers)
+    #     logging.info(self.headers)
     #     length = int(self.headers["Content-Length"])
     #     body = self.rfile.read(length).decode("utf-8")
-    #     logging.debug("Body:", body)
+    #     logging.info("Body:", body)
     #     parsedBody = parse_qs(body)
-    #     logging.debug("Parsed Body:", parsedBody)
+    #     logging.info("Parsed Body:", parsedBody)
     #     username = parsedBody["username"][0]
     #     password = parsedBody["password"][0]
     #     db = characters_db.Users()
     #     user = db.getUserByUsername(username)
     #     if user != None:
-    #         logging.debug("User:", user)
+    #         logging.info("User:", user)
     #         hashed = user["password"]
     #         if bcrypt.verify(password, hashed):
     #             self.send_response(200)
     #             self.end_headers()
-    #             logging.debug("Uid:", user)
+    #             logging.info("Uid:", user)
     #             self.session["userId"] = user["id"]
     #         else:
     #             self.send401()
@@ -276,7 +248,7 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
 def main():
     logging.basicConfig(filename='server.log', level=logging.INFO)
-    logging.info('Started')
+    logging.info('Starting server')
 
     db = usersDB.Users()
     db.createTable()
@@ -289,7 +261,7 @@ def main():
     listen = ("0.0.0.0", port)
     server = HTTPServer(listen, MyRequestHandler)
 
-    logging.debug("Server listening on", "{}:{}".format(*listen))
+    logging.info("Server listening on", "{}:{}".format(*listen))
     server.serve_forever()
 
 if __name__ == '__main__':
