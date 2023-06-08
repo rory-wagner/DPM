@@ -1,8 +1,5 @@
-import base64
-import bcrypt
 import hashlib
 import formatting
-import logging
 
 def encrypt(password=str, salt=str):
 

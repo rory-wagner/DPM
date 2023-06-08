@@ -34,8 +34,6 @@ class MyRequestHandler (BaseHTTPRequestHandler):
             self.send404()
         return
 
-#Here I start the implementation:
-
     def encryptDefault(self):
         logging.info("encrypting default password")
         length = int(self.headers["Content-Length"])
@@ -45,23 +43,33 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         parsedBody = parse_qs(body)
         
         # Gather data:
-        username = parsedBody["username"][0]
-        password = parsedBody["password"][0]
-        domain = parsedBody["domain"][0]
-        counter = parsedBody["counter"][0]
+        try:
+            if parsedBody["username"] and parsedBody["password"] and parsedBody["domain"] and parsedBody["counter"]:
+                username = parsedBody["username"][0]
+                password = parsedBody["password"][0]
+                domain = parsedBody["domain"][0]
+                counter = parsedBody["counter"][0]
+        except Exception as err:
+            logging.info("username, password, domain, and counter all must be Non-Empty: %s", err)
+            self.send400()
+            return
 
         # Custom salt
         salt = username + domain + counter
-        finalPassword = hashing.encrypt(password, salt)
+        try:
+            finalPassword = hashing.encrypt(password, salt)
+            
+            # now we will check if the user needs to be added to the database
+            self.checkDatabase(username, domain, counter, -1, "", None, None, None)
+        except Exception as err:
+            logging.info(err)
+            self.send400()
+            return
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.sendPassword(finalPassword)
-
-        #now we will check if the user needs to be added to the database
-        self.checkDatabase(username, domain, counter, -1, "", False, False, False)
-
         return
 
     def sendPassword(self, encryptedPassword):
@@ -70,7 +78,6 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         intoBytes = bytes(json.dumps(encryptedJSON), "utf-8")
         self.wfile.write(intoBytes)
         return
-    
 
     def encryptCustom(self):
         logging.info("encrypting custom password")
@@ -99,6 +106,7 @@ class MyRequestHandler (BaseHTTPRequestHandler):
         else:
             logging.info("password length must be a positive integer")
             self.send400()
+            return
 
         #passing a empty string so the alphabet doesn't mess up and we can still check.
         # if symbols == "default":
@@ -119,16 +127,20 @@ class MyRequestHandler (BaseHTTPRequestHandler):
 
         salt = username + domain + counter
 
-        encryptedPassword = hashing.encrypt(password, salt)
-        finishedPassword = formatting.formatAsCustom(encryptedPassword, passwordLength, symbols, numbers, uppercase, lowercase)
+        try:
+            encryptedPassword = hashing.encrypt(password, salt)
+            finishedPassword = formatting.formatAsCustom(encryptedPassword, passwordLength, symbols, numbers, uppercase, lowercase)
+
+            self.checkDatabase(username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers)
+        except Exception as err:
+            logging.info(err)
+            self.send400()
+            return
 
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         self.sendPassword(finishedPassword)
-
-        self.checkDatabase(username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers)
-
         return
 
     def checkDatabase(self, username, domain, counter, passwordLength, symbols, uppercase, lowercase, numbers):
@@ -261,7 +273,7 @@ def main():
     listen = ("0.0.0.0", port)
     server = HTTPServer(listen, MyRequestHandler)
 
-    logging.info("Server listening on", "{}:{}".format(*listen))
+    logging.info("Server listening on {}:{}".format(*listen))
     server.serve_forever()
 
 if __name__ == '__main__':
