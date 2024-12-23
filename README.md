@@ -6,7 +6,7 @@ Gone are the ways of storing passwords for hackers to attack! Instead, generate 
 
 ## Local Setup BE:
 
-The backend is run with Python3.
+The backend is run with Python3.x
 
 It is suggested to use a venv and install all requirements in requirements.txt.
 
@@ -17,4 +17,4 @@ After activating venv and installing the requirements, run `python ./serverSide/
 
 The frontend was never intended to be big, so it is just an html page.
 
-Simply navigate to the page.
+Simply navigate to the page in your browser.
