@@ -4,6 +4,10 @@
       <h1 id="title">🔐 Deterministic Password Manager</h1>
     </header>
 
+    <div v-if="errorMessage" class="error-banner" role="alert">
+      {{ errorMessage }}
+    </div>
+
     <div id="main">
       <!-- Left Panel -->
       <div id="left-panel">
@@ -126,33 +130,33 @@ export default {
       numbers: false,
       finalPassword: '',
       showPassword: false,
-      specifications: []
+      specifications: [],
+      errorMessage: ''
     };
   },
   methods: {
-    generateDefault() {
+    async generateDefault() {
       let bodyString = "username=" + encodeURIComponent(this.username);
       bodyString += "&password=" + encodeURIComponent(this.masterPassword);
       bodyString += "&domain=" + encodeURIComponent(this.domain);
       bodyString += "&counter=" + encodeURIComponent(this.counter);
 
-      fetch(BASE_URL + 'defaults', {
-        method: "POST",
-        body: bodyString,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(response => {
-        console.log("Server responded from default POST!", response);
-        response.json().then(data => {
-          console.log(data);
-          this.displayPassword(data);
+      try {
+        const data = await this.requestJson('defaults', {
+          method: "POST",
+          body: bodyString,
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
         });
-      });
+        this.displayPassword(data);
+      } catch (error) {
+        this.handleRequestError(error, 'generate the default password');
+      }
     },
 
-    generateCustom() {
+    async generateCustom() {
       let bodyString = "username=" + encodeURIComponent(this.username);
       bodyString += "&password=" + encodeURIComponent(this.masterPassword);
       bodyString += "&domain=" + encodeURIComponent(this.domain);
@@ -163,40 +167,57 @@ export default {
       bodyString += "&lowercase=" + encodeURIComponent(this.lowercase);
       bodyString += "&numbers=" + encodeURIComponent(this.numbers);
 
-      // Avoid logging sensitive request payloads (contains master password)
-      // console.log(bodyString);
-
-      fetch(BASE_URL + 'customs', {
-        method: "POST",
-        body: bodyString,
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }).then(response => {
-        console.log("Server responded from custom POST!", response);
-        response.json().then(data => {
-          console.log(data);
-          this.displayPassword(data);
+      try {
+        const data = await this.requestJson('customs', {
+          method: "POST",
+          body: bodyString,
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
         });
-      });
+        this.displayPassword(data);
+      } catch (error) {
+        this.handleRequestError(error, 'generate the custom password');
+      }
     },
 
-    getSavedSpecifications() {
-      fetch(BASE_URL + 'specifications', {
-        method: "GET",
-        credentials: "include",
-        headers: {}
-      }).then(response => {
-        console.log("Server responded from specifications GET", response);
-        response.json().then(data => {
-          console.log(data);
-          this.specifications = data;
+    async getSavedSpecifications() {
+      try {
+        const data = await this.requestJson('specifications', {
+          method: "GET",
+          credentials: "include",
+          headers: {}
         });
-      });
+        this.specifications = data;
+      } catch (error) {
+        this.handleRequestError(error, 'load saved specifications');
+      }
+    },
+
+    async requestJson(path, options) {
+      const response = await fetch(BASE_URL + path, options);
+
+      if (!response.ok) {
+        const bodyText = await response.text();
+        const details = bodyText ? `: ${bodyText}` : '';
+        throw new Error(`Request failed with status ${response.status}${details}`);
+      }
+
+      try {
+        return await response.json();
+      } catch (error) {
+        throw new Error('The server returned invalid JSON.');
+      }
+    },
+
+    handleRequestError(error, action) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred.';
+      this.errorMessage = `Unable to ${action}. ${message}`;
     },
 
     displayPassword(data) {
+      this.errorMessage = '';
       this.finalPassword = data["encryptedPassword"];
       this.showPassword = true;
     }
@@ -228,6 +249,16 @@ body {
   background: linear-gradient(135deg, #1a73e8, #0d47a1);
   padding: 20px 40px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.error-banner {
+  margin: 20px 28px 0;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #f0b4b4;
+  background: #fff1f1;
+  color: #a61b1b;
+  font-weight: 600;
 }
 
 #title {
