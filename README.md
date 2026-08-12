@@ -36,6 +36,28 @@ After activating venv and installing the requirements, run `python ./serverSide/
 
 ## Local Setup FE:
 
-The frontend was never intended to be big, so it is just an html page.
+The frontend is a Vue CLI app in `./frontend`.
 
-Simply navigate to the page in your browser.
+From the `frontend` directory:
+
+Install dependencies:
+```
+npm install
+```
+
+Run development server (hot reload):
+```
+npm run serve
+```
+
+Build for production:
+```
+npm run build
+```
+
+Lint and auto-fix files:
+```
+npm run lint
+```
+
+For Vue CLI config details, see: https://cli.vuejs.org/config/
