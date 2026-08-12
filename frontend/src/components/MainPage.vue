@@ -163,7 +163,8 @@ export default {
       bodyString += "&lowercase=" + encodeURIComponent(this.lowercase);
       bodyString += "&numbers=" + encodeURIComponent(this.numbers);
 
-      console.log(bodyString);
+      // Avoid logging sensitive request payloads (contains master password)
+      // console.log(bodyString);
 
       fetch(BASE_URL + 'customs', {
         method: "POST",
