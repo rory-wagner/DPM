@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  # Frontend - npm/Vue
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+
+  # Backend - Python
+  - package-ecosystem: "pip"
+    directory: "/serverSide"
+    schedule:
+      interval: "weekly"
