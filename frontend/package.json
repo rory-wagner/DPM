@@ -40,5 +40,9 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "overrides": {
+    "brace-expansion": "^2.0.1",
+    "minimatch": "^9.0.4"
+  }
 }
